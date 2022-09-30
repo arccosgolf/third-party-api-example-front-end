@@ -7,24 +7,37 @@ const REDIRECT_URI = 'http://localhost:8080'
 const RESPONSE_TYPE = 'code'
 const SCOPES = [
     'openid',
+    'email',
     'profile',
     'arccos/read:rounds',
 ]
 
-type TokenResponse = {
+type TokenResponseBody = {
     access_token: string
     id_token?: string
     refresh_token?: string
 }
 
+type IdTokenPayload = {
+    "sub": string
+    "custom:arccosUserId": string
+    "email": string
+}
+
+type RoundsResponseBody = {
+
+}
+
 export const App: React.FC = () => {
-    const [tokenResponse, setTokenResponse] = useState<TokenResponse>()
-    const [isFetchingAccessToken, setIsFetchingAccessToken] = useState<boolean>()
+    const [tokenResponseBody, setTokenResponseBody] = useState<TokenResponseBody>()
     const queryParams = new URLSearchParams(window.location.search)
     const accessCode = queryParams.get('code')
+    const [error, setError] = useState<string>()
+    const [roundsResponseBody, setRoundsResponseBody] = useState<RoundsResponseBody>()
+    const idTokenPayload: IdTokenPayload | undefined = tokenResponseBody?.id_token ? parseJwt(tokenResponseBody.id_token) : undefined
 
     useEffect(() => {
-        if (accessCode && !isFetchingAccessToken) {
+        if (accessCode && !tokenResponseBody && !error) {
             window.fetch(
                 `https://iqa-cf-arccosgolf.auth.us-west-2.amazoncognito.com/oauth2/token`,
                 {
@@ -41,25 +54,67 @@ export const App: React.FC = () => {
                     })
                 }
             )
-                .then(res => res.json())
-                .then(body => setTokenResponse(body))
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('invalid response')
+                    }
+                    return res.json()
+                })
+                .then(body => setTokenResponseBody(body))
+                .catch(e => setError(e))
         }
-    }, [])
+    })
+
+    useEffect(() => {
+        if (tokenResponseBody && idTokenPayload && !roundsResponseBody) {
+            window.fetch(
+                `https://iqa.api.arccosgolf.com/protected/v1/users/${idTokenPayload["custom:arccosUserId"]}/rounds`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${tokenResponseBody.access_token}`,
+                    },
+                }
+            )
+                .then(res => res.json())
+                .then(body => setRoundsResponseBody(body))
+        }
+    })
+
     const signInUrl = `${ID_PROVIDER_URL}/login?client_id=${CLIENT_ID}&redirect_uri=${encodeURI(REDIRECT_URI)}&response_type=${RESPONSE_TYPE}&scope=${SCOPES.join('+')}`
     return (
         <div>
-            <div>
+            <div style={{ whiteSpace: 'pre-wrap' }}>
                 <h3>Authentication Information</h3>
+                <a href={signInUrl}>Click Here to Sign In</a>
+                <br />
+                <br />
                 <div>
-                    <label>Access Code: </label>
-                    <span>{accessCode}</span>
+                    <label>Has Access Code: </label>
+                    <span>{accessCode ? 'Yes' : 'No'}</span>
                 </div>
                 <div>
-                    <label>Token Response: </label>
-                    <div style={{ whiteSpace: 'pre-wrap' }}>{tokenResponse ? JSON.stringify(tokenResponse, null, 4) : 'undefined'}</div>
+                    <label>Has Token Response: </label>
+                    <span>{tokenResponseBody ? 'Yes' : 'No'}</span>
+                </div>
+                <br />
+                <div>
+                    <label>ID Token Payload: </label>
+                    <div >{idTokenPayload ? JSON.stringify(idTokenPayload, null, 4) : 'undefined'}</div>
+                </div>
+                <br />
+                <div>
+                    <label>Rounds Response: </label>
+                    <div >{roundsResponseBody ? JSON.stringify(roundsResponseBody, null, 4) : 'undefined'}</div>
                 </div>
             </div>
-            <a href={signInUrl}>Click Here to Sign In</a>
         </div>
     )
 }
+
+const parseJwt = (token: string) => {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+
+    return JSON.parse(jsonPayload);
+};;
