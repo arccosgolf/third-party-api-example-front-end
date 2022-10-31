@@ -1,5 +1,5 @@
 import {RoundsResponseBody, TokenResponseBody} from "./types";
-import {formatRequestBodyForAuth} from "./utils";
+import {getUrlSearchParams, queryStringify} from "./utils";
 
 type FetchAuthorizationCodeAccessTokenParams = {
     grant_type: 'authorization_code'
@@ -22,7 +22,7 @@ export const fetchAuthorizationCodeAccessToken = async (params: FetchAuthorizati
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: formatRequestBodyForAuth(params)
+            body: getUrlSearchParams(params)
         }
     )
     if (!res.ok) {
@@ -35,14 +35,21 @@ export const fetchAuthorizationCodeAccessToken = async (params: FetchAuthorizati
 type FetchRoundsParams = {
     accessToken?: string
     arccosUserId?: string
+    limit?: number
+    offset?: number
 }
 
 export const fetchRounds = async (params: FetchRoundsParams): Promise<RoundsResponseBody> => {
+    const {
+        arccosUserId,
+        accessToken,
+        ...restParams
+    } = params
     const res = await window.fetch(
-        `${API_URL}/protected/v1/users/${params.arccosUserId}/rounds`,
+        `${API_URL}/protected/v1/users/${arccosUserId}/rounds?${queryStringify(restParams)}`,
         {
             headers: {
-                Authorization: `Bearer ${params.accessToken}`,
+                Authorization: `Bearer ${accessToken}`,
             },
         }
     )
@@ -64,7 +71,7 @@ export const fetchRefreshTokenAccessToken = async (params: FetchRefreshTokenAcce
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: formatRequestBodyForAuth(params)
+            body: getUrlSearchParams(params)
         }
     )
     return await res.json()
@@ -83,7 +90,7 @@ export const revokeRefreshToken = async (params: RevokeRefreshTokenParams): Prom
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: formatRequestBodyForAuth(params)
+            body: getUrlSearchParams(params)
         }
     )
 }

@@ -3,9 +3,11 @@ export type TokenResponseBody = {
     id_token?: string
     refresh_token?: string
 }
+
 export type IdTokenPayload = {
     "sub": string
     "custom:arccosUserId": string
     "email": string
 }
+
 export type RoundsResponseBody = {}
