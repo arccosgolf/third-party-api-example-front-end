@@ -9,8 +9,7 @@ import {
 import {getAuthorizationCode, parseJwt, queryStringify} from "./utils";
 
 const {
-    // this is our publicly hosted authentication endpoint. currently it points at an awscognito domain. Ideally we'll
-    // change that in the future.
+    // this is our publicly hosted authentication endpoint.
     ID_PROVIDER_URL,
     // client id that you would have been issued
     CLIENT_ID,
