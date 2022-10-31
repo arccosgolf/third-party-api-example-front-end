@@ -13,7 +13,7 @@ The following global dependencies were used at the versions specified to create 
 but no guarantees.
 
 * `yarn@1.2.3`
-* `node@18.7.4` (or `nvm@0.39.1`)
+* `node@18.7.4` (or `nvm@0.39.1` and run `nvm use` in the directory)
 
 ### Installation
 
