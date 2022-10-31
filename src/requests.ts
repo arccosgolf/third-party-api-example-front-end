@@ -8,15 +8,20 @@ type FetchAuthorizationCodeAccessTokenParams = {
     client_secret?: string
 }
 
+const {
+    ID_PROVIDER_URL,
+    API_URL,
+} = process.env
+
 export const fetchAuthorizationCodeAccessToken = async (params: FetchAuthorizationCodeAccessTokenParams): Promise<TokenResponseBody> => {
     const res = await window.fetch(
-        `https://iqa-cf-arccosgolf.auth.us-west-2.amazoncognito.com/oauth2/token`,
+        `${ID_PROVIDER_URL}/oauth2/token`,
         {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: new URLSearchParams(params)
+            body: _formatRequestBody(params)
         }
     )
     if (!res.ok) {
@@ -33,7 +38,7 @@ type FetchRoundsParams = {
 
 export const fetchRounds = async (params: FetchRoundsParams): Promise<RoundsResponseBody> => {
     const res = await window.fetch(
-        `https://iqa.api.arccosgolf.com/protected/v1/users/${params.arccosUserId}/rounds`,
+        `${API_URL}/protected/v1/users/${params.arccosUserId}/rounds`,
         {
             headers: {
                 Authorization: `Bearer ${params.accessToken}`,
@@ -52,13 +57,13 @@ type FetchRefreshTokenAccessTokenParams = {
 
 export const fetchRefreshTokenAccessToken = async (params: FetchRefreshTokenAccessTokenParams): Promise<TokenResponseBody> => {
     const res = await window.fetch(
-        `https://iqa-cf-arccosgolf.auth.us-west-2.amazoncognito.com/oauth2/token`,
+        `${ID_PROVIDER_URL}/oauth2/token`,
         {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: new URLSearchParams(params)
+            body: _formatRequestBody(params)
         }
     )
     return await res.json()
@@ -71,13 +76,22 @@ type RevokeRefreshTokenParams = {
 
 export const revokeRefreshToken = async (params: RevokeRefreshTokenParams): Promise<void> => {
     await window.fetch(
-        `https://iqa-cf-arccosgolf.auth.us-west-2.amazoncognito.com/oauth2/revoke`,
+        `${ID_PROVIDER_URL}/oauth2/revoke`,
         {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: new URLSearchParams(params)
+            body: _formatRequestBody(params)
         }
     )
 }
+
+const _formatRequestBody = (params: any): URLSearchParams => new URLSearchParams(
+    Object.entries(params)
+        .filter(([key, value]) => !!value)
+        .reduce(
+            (acc, [key, value]) => ({ ...acc, [key]: value }),
+            {},
+        ),
+)
