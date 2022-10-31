@@ -11,7 +11,6 @@
     "start:iqa": "ENV=iqa yarn start",
     "start:prod": "ENV=prod yarn start"
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.19.1",
     "@babel/preset-env": "^7.19.1",

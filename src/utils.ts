@@ -17,3 +17,12 @@ export const getAccessCode = () => {
     const queryParams = new URLSearchParams(window.location.search)
     return queryParams.get('code')
 }
+
+export const formatRequestBodyForAuth = (params: any): URLSearchParams => new URLSearchParams(
+    Object.entries(params)
+        .filter(([_key, value]) => !!value)
+        .reduce(
+            (acc, [key, value]) => ({...acc, [key]: value}),
+            {},
+        ),
+)

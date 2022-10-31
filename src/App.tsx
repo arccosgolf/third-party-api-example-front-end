@@ -73,11 +73,11 @@ export const App: React.FC = () => {
 
     const doRevokeToken = useCallback(() => {
         if (tokenResponseBody?.refresh_token) {
+            // noinspection JSIgnoredPromiseFromCall
             revokeRefreshToken({
                 client_id: CLIENT_ID,
                 token: tokenResponseBody.refresh_token,
             })
-                // .finally(() => setTokenResponseBody(undefined))
         }
     }, [tokenResponseBody?.refresh_token])
 

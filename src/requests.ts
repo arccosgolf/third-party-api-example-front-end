@@ -1,4 +1,5 @@
 import {RoundsResponseBody, TokenResponseBody} from "./types";
+import {formatRequestBodyForAuth} from "./utils";
 
 type FetchAuthorizationCodeAccessTokenParams = {
     grant_type: 'authorization_code'
@@ -21,7 +22,7 @@ export const fetchAuthorizationCodeAccessToken = async (params: FetchAuthorizati
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: _formatRequestBody(params)
+            body: formatRequestBodyForAuth(params)
         }
     )
     if (!res.ok) {
@@ -63,7 +64,7 @@ export const fetchRefreshTokenAccessToken = async (params: FetchRefreshTokenAcce
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: _formatRequestBody(params)
+            body: formatRequestBodyForAuth(params)
         }
     )
     return await res.json()
@@ -82,16 +83,8 @@ export const revokeRefreshToken = async (params: RevokeRefreshTokenParams): Prom
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: _formatRequestBody(params)
+            body: formatRequestBodyForAuth(params)
         }
     )
 }
 
-const _formatRequestBody = (params: any): URLSearchParams => new URLSearchParams(
-    Object.entries(params)
-        .filter(([key, value]) => !!value)
-        .reduce(
-            (acc, [key, value]) => ({ ...acc, [key]: value }),
-            {},
-        ),
-)
