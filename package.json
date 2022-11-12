@@ -1,5 +1,5 @@
 {
-  "name": "protected-api-example-application",
+  "name": "protected-api-example-front-end",
   "version": "1.0.0",
   "main": "src/index.tsx",
   "author": "arccosgolf",
@@ -7,9 +7,9 @@
   "private": true,
   "scripts": {
     "build": "yarn run clean-dist && webpack config/webpack.config.js",
-    "start": "ENV=${ENV:-iqa} webpack serve --config config/webpack.config.js"
-  },
-  "dependencies": {
+    "start": "ENV=${ENV:-prod} webpack serve --config config/webpack.config.js",
+    "start:iqa": "ENV=iqa yarn start",
+    "start:prod": "ENV=prod yarn start"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
@@ -26,6 +26,8 @@
     "@typescript-eslint/parser": "^5.38.1",
     "babel-loader": "^8.2.5",
     "css-loader": "^6.7.1",
+    "dotenv": "^16.0.3",
+    "dotenv-expand": "^9.0.0",
     "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
