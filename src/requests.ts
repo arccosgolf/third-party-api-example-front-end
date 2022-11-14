@@ -46,7 +46,7 @@ export const fetchRounds = async (params: FetchRoundsParams): Promise<GetRoundsR
         ...restParams
     } = params
     const res = await window.fetch(
-        `${API_URL}/protected/v1/users/${arccosUserId}/rounds?${queryStringify(restParams)}`,
+        `${API_URL}/v5/users/${arccosUserId}/rounds?${queryStringify(restParams)}`,
         {
             headers: {
                 Authorization: `Bearer ${accessToken}`,

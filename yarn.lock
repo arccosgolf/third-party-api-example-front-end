@@ -8851,9 +8851,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protected-api-example-front-end@workspace:.":
+"third-party-api-example-front-end@workspace:.":
   version: 0.0.0-use.local
-  resolution: "protected-api-example-front-end@workspace:."
+  resolution: "third-party-api-example-front-end@workspace:."
   dependencies:
     "@babel/core": ^7.19.1
     "@babel/preset-env": ^7.19.1

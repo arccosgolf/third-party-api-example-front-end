@@ -1,4 +1,4 @@
-# Arccos Protected API Demo Front-End
+# Arccos Third Party API Demo Front-End
 
 This is a demo project for clients to see how they can interact with our endpoints in a fully supported manner. The
 primary goal is to give clients an example of how the authentication pattern works (standard authorization code grant
